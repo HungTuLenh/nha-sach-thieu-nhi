@@ -1,0 +1,67 @@
+KIDDOBOOKS — WEBSITE SÁCH THIẾU NHI
+
+1. CÁCH CHẠY
+- Mở thư mục nha-sach-thieu-nhi trong Visual Studio Code.
+- Nếu chưa có, cài tiện ích Live Server của Ritwick Dey.
+- Nhấn chuột phải index.html, chọn Open with Live Server.
+- Luôn mở cùng địa chỉ và cổng, ví dụ http://127.0.0.1:5500.
+- Không cần npm, không cần build, không cần database.
+- Không nên mở bằng file:// vì lưu trữ giữa các trang và Web Crypto có thể
+  không hoạt động giống nhau giữa các trình duyệt.
+- Khi đã cài Live Server, website hoạt động offline. Font và logo nằm trong project.
+
+2. DEMO TỪ ĐẦU ĐẾN CUỐI
+- Trang chủ: thêm một cuốn sách vào giỏ khi chưa đăng nhập.
+- Khuyến mãi: nhấn Lưu mã ưu đãi ABCXYZ (giảm 20% tiền sản phẩm).
+- Giỏ hàng: thay số lượng, kiểm tra tổng tiền, nhấn Đặt hàng.
+- Đăng ký bằng số điện thoại thử 10 chữ số bắt đầu bằng 0 và mật khẩu >= 6 ký tự.
+- Đăng ký thành công tự đăng nhập, gộp giỏ khách và quay về đặt hàng.
+- Chọn nhận tại cửa hàng (miễn phí) hoặc giao tận nơi (30.000đ).
+- Chọn hẹn giờ trong tương lai nếu muốn, nhập đủ thông tin rồi đặt hàng.
+- Mở tài khoản để xem lịch sử, chi tiết đơn và mua lại.
+- Tài khoản cho phép sửa thông tin, đổi mật khẩu, thêm/sửa/xóa địa chỉ,
+  chọn địa chỉ mặc định và xem sách yêu thích.
+- Quên mật khẩu là thao tác đặt lại DEMO theo số điện thoại, không có OTP.
+- Sách có quà: Sách tô màu động vật, Bộ bảng viết xóa học tập.
+
+3. CÁCH TỔ CHỨC CODE
+- Các file .html là 8 trang riêng biệt, mỗi trang có thuộc tính data-trang.
+- giao-dien/dung-chung.css: màu sắc, bố cục từng trang và responsive.
+- du-lieu/san-pham.js: mảng 12 sản phẩm, danh mục và mô tả dùng chung.
+- xu-ly/luu-tru.js: đọc/ghi localStorage, tài khoản, giỏ và tính tiền.
+- xu-ly/ung-dung.js: mỗi hàm trangChu, trangSanPham, trangGioHang...
+  dựng nội dung cho một trang rồi gắn các sự kiện DOM.
+- Các trang tải script theo thứ tự: dữ liệu -> lưu trữ -> ứng dụng.
+- Các ký tự do người dùng nhập được thoát trước khi đưa vào HTML.
+- Không dùng framework, thư viện JavaScript, thư viện CSS hoặc API thương mại.
+- Để đổi giá/tên sách, sửa SAN_PHAM trong du-lieu/san-pham.js.
+- Để đổi màu, sửa biến ở đầu giao-dien/dung-chung.css.
+- Font Nunito tải từ Google Fonts, giấy phép OFL kèm trong phong-chu/.
+- Logo trích từ bản thiết kế PDF người dùng cung cấp. Ảnh sách là ô màu
+  placeholder theo thiết kế, tạo bằng CSS.
+
+4. DỮ LIỆU VÀ GIỚI HẠN
+- localStorage: khóa kiddobooks-du-lieu-1 chứa JSON của tài khoản, giỏ,
+  địa chỉ, yêu thích, đơn hàng, mã ưu đãi và yêu cầu tư vấn.
+- sessionStorage: khóa kiddobooks-phien xác định tài khoản đang đăng nhập.
+- Mỗi tài khoản có dữ liệu riêng trong giao diện. Tài khoản đang đăng nhập
+  được giữ khi tải lại trang; đăng xuất sẽ xóa phiên hiện tại.
+- Mật khẩu được băm PBKDF2/SHA-256 với muối ngẫu nhiên bằng Web Crypto.
+- Website chỉ là bài tập phía trình duyệt, KHÔNG có bảo mật/xác thực máy chủ.
+  Bất kỳ ai có quyền truy cập bộ nhớ trình duyệt đều có thể sửa dữ liệu.
+- Chỉ sử dụng tên, số điện thoại và mật khẩu thử. Không dùng thông tin thật.
+- Không gửi đơn đến cửa hàng, không thanh toán, không gửi SMS/email/tư vấn thật.
+- Không đồng bộ giữa máy/trình duyệt/địa chỉ web khác nhau.
+- Xóa dữ liệu trình duyệt sẽ mất tài khoản và đơn hàng.
+- Đơn vừa đặt có trạng thái Chờ xác nhận; không tự thay đổi sang đã giao.
+
+5. KIỂM TRA BÀI
+- Đăng ký trùng số, xác nhận mật khẩu sai, đăng nhập sai.
+- Tìm kiếm có dấu/không dấu, lọc danh mục/tuổi/giá, sắp xếp, phân trang.
+- Giỏ trống, tăng/giảm số lượng, xóa sách, áp và bỏ mã giảm giá.
+- Đăng nhập sau khi thêm giỏ, tải lại trang không mất giỏ.
+- Nhận tại cửa hàng/giao tận nơi: ô địa chỉ và phí phải thay đổi.
+- Hẹn giờ quá khứ bị từ chối; đặt hàng thành công thì giỏ trống.
+- Hai tài khoản không nhìn thấy đơn/địa chỉ của nhau trong giao diện.
+- Đổi mật khẩu, đặt lại mật khẩu demo, địa chỉ mặc định, mua lại.
+- Kiểm tra trên Chrome/Edge ở 390px, 768px và 1440px.
