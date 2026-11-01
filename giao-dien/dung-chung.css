@@ -423,7 +423,7 @@ body {
 }
 .luoi-danh-muc {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
 }
 .o-danh-muc {
@@ -441,6 +441,19 @@ body {
   width: 76px;
   height: 76px;
   margin: 0 auto 15px;
+  overflow: hidden;
+}
+.tron-danh-muc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.anh-banner {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  margin-bottom: 18px;
 }
 .luoi-noi-bat {
   display: grid;
@@ -492,6 +505,20 @@ body {
   aspect-ratio: 1.25;
   min-height: 320px;
 }
+.bia-sach img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  display: block;
+}
+.bia-sach.co-anh:before,
+.bia-sach.co-anh:after {
+  display: none;
+}
+
 .bia-sach.duong-cheo:before,
 .bia-sach.duong-cheo:after {
   content: "";
@@ -1773,3 +1800,26 @@ dialog .dong-hop {
     padding: 25px 20px;
   }
 }
+/* Giao dien dang nhap va dang ky theo khung Figma moi */
+.noi-dang-nhap { background: var(--kem); min-height: 460px; }
+.tieu-de-trang { margin: 8px 0 18px; }
+.tieu-de-trang h1 { margin-bottom: 4px; }
+.tieu-de-trang p { color: #746b60; font-size: 12px; }
+.mot-form { display:flex; justify-content:center; }
+.the-form-don { width:min(100%, 330px); border:1px solid var(--vien); box-shadow:0 3px 0 #0000000a; }
+.the-form-don.mau-vang { background:#fff0bf; }
+.the-form-don.mau-la { background:#d8eee8; }
+.tieu-de-form { padding:16px 18px 0; }
+.tieu-de-form h2 { font-size:18px; margin:0 0 5px; }
+.tieu-de-form p { font-size:11px; color:#746b60; margin:0; line-height:1.45; }
+.the-form-don .noi-form { padding:14px 18px 18px; }
+.the-form-don label { font-size:10px; color:#756b61; gap:4px; margin-bottom:9px; }
+.the-form-don input:not([type=checkbox]) { min-height:34px; padding:7px 9px; border-color:#cfc7b9; background:#fff; font-size:11px; }
+.the-form-don .nut-chinh { min-height:34px; font-size:11px; background:var(--san-ho); border-color:var(--san-ho); }
+.the-form-don .cuoi-form { font-size:10px; margin-top:12px; }
+.the-form-don .quen-mat-khau { font-size:10px; margin:0; }
+.the-form-don .dong-y { font-size:10px; display:flex; flex-direction:row; align-items:center; gap:5px; }
+.nhac-demo { max-width:330px; margin:18px auto 0; }
+@media (max-width:560px) { .noi-dang-nhap { min-height:480px; } .tieu-de-trang { margin-top:0; } .the-form-don { width:100%; } }
+.icon-tai-khoan { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+@media (max-width: 560px) { .vien-tron .icon-tai-khoan { width: 13px; height: 13px; } }

@@ -80,40 +80,12 @@ function tinhTien(phi = 30000) {
   return { tam, giam, phi: tam ? phi : 0, tong: tam - giam + (tam ? phi : 0) };
 }
 function maNgauNhien() {
-  return crypto.randomUUID();
+  return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
 }
 function soDienThoaiHopLe(s) {
   return /^0\d{9}$/.test(s);
 }
-// Web Crypto là API có sẵn trong trình duyệt, không dùng thư viện ngoài.
-async function bamMatKhau(matKhau, muoi) {
-  if (!crypto.subtle)
-    throw Error(
-      "Hãy mở website bằng Live Server (localhost) để dùng chức năng tài khoản.",
-    );
-  const boMaHoa = new TextEncoder();
-  const khoa = await crypto.subtle.importKey(
-    "raw",
-    boMaHoa.encode(matKhau),
-    "PBKDF2",
-    false,
-    ["deriveBits"],
-  );
-  const ketQua = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: boMaHoa.encode(muoi),
-      iterations: 100000,
-      hash: "SHA-256",
-    },
-    khoa,
-    256,
-  );
-  return Array.from(new Uint8Array(ketQua), (b) =>
-    b.toString(16).padStart(2, "0"),
-  ).join("");
-}
-async function dangNhapTaiKhoan(tk) {
+function dangNhapTaiKhoan(tk) {
   const truoc = sessionStorage.getItem("kiddobooks-phien");
   sessionStorage.setItem("kiddobooks-phien", tk.id);
   try {

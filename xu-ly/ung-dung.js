@@ -8,6 +8,7 @@ const duongDan = {
   "chi-tiet": "chi-tiet-san-pham.html",
   "khuyen-mai": "khuyen-mai.html",
   "dang-nhap": "dang-nhap.html",
+  "dang-ky": "dang-ky.html",
   "tai-khoan": "tai-khoan.html",
   "gio-hang": "gio-hang.html",
   "dat-hang": "dat-hang.html",
@@ -46,6 +47,11 @@ function bieuTuong(ten) {
   };
   return `<svg class="bieu-tuong" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${net[ten] || net.sao}</svg>`;
 }
+function iconTaiKhoan(loai) {
+  const file = loai === "dang-ky" ? "icon-dang-ky.png" : "icon-dang-nhap.png";
+  const alt = loai === "dang-ky" ? "Biểu tượng đăng ký" : "Biểu tượng đăng nhập";
+  return `<img class="icon-tai-khoan" src="hinh-anh/bieu-trung/${file}" alt="${alt}">`;
+}
 let henThongBao;
 function thongBao(chuoi) {
   const o = document.querySelector("#thong-bao");
@@ -64,7 +70,7 @@ function hienLoi(form, e) {
 function ganForm(id, xuLy) {
   const form = document.getElementById(id);
   if (!form) return;
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     const nut = e.submitter || form.querySelector("[type=submit]");
     if (nut?.disabled) return;
@@ -72,7 +78,7 @@ function ganForm(id, xuLy) {
     const loi = form.querySelector(".loi");
     if (loi) loi.textContent = "";
     try {
-      await xuLy(new FormData(form), form);
+      xuLy(new FormData(form), form);
     } catch (err) {
       hienLoi(form, err);
     } finally {
@@ -90,8 +96,9 @@ function moHop(tieuDe, html, sauMo) {
 function truong(nhan, ten, kieu = "text", giaTri = "", them = "") {
   return `<label>${nhan}<input name="${ten}" type="${kieu}" value="${thoat(giaTri)}" ${them}></label>`;
 }
-function bia(sach, lop = "", mau = sach.mau) {
-  return `<div class="bia-sach mau-${mau} ${lop}" role="img" aria-label="Ảnh minh họa ${thoat(sach.ten)}">${lop.includes("duong-cheo") ? "<span>Ảnh sản<br>phẩm</span>" : ""}</div>`;
+function bia(sach, lop = "", mau = sach.mau, anh = sach.anh) {
+  const src = anh || sach.anh;
+  return `<div class="bia-sach mau-${mau} ${lop} ${src ? "co-anh" : ""}" role="img" aria-label="Ảnh minh họa ${thoat(sach.ten)}">${src ? `<img src="${thoat(src)}" alt="${thoat(sach.ten)}">` : lop.includes("duong-cheo") ? "<span>Ảnh sản<br>phẩm</span>" : ""}</div>`;
 }
 function trong(tieuDe, moTa, link = "san-pham.html", nut = "Khám phá sách") {
   return `<div class="trong"><h2>${tieuDe}</h2><p>${moTa}</p><a class="nut nut-chinh" href="${link}">${nut}</a></div>`;
@@ -100,7 +107,7 @@ function capNhatDau() {
   const tk = nguoiDung();
   const so = docGio().reduce((t, d) => t + d.soLuong, 0);
   document.querySelector("#dau-trang").innerHTML =
-    `<div class="khung thanh-dau"><nav class="lien-ket-dau" aria-label="Điều hướng chính"><a href="san-pham.html" ${trang === "san-pham" ? 'aria-current="page"' : ""}>Sản phẩm</a><a href="khuyen-mai.html" ${trang === "khuyen-mai" ? 'aria-current="page"' : ""}>Khuyến mãi</a></nav><form class="tim-dau" action="san-pham.html" role="search"><a href="index.html" aria-label="Trang chủ Kiddobooks">${bieuTuong("menu")}</a><input type="search" name="q" placeholder="Tìm kiếm" aria-label="Tìm kiếm sách" value="${thoat(thamSo.get("q") || "")}"><button aria-label="Tìm kiếm">${bieuTuong("tim")}</button></form><nav class="tai-khoan-dau" aria-label="Tài khoản và giỏ hàng">${tk ? `<a class="vien-tron dang-nhap" href="tai-khoan.html">${bieuTuong("nguoi")}<span>${thoat(tk.ten.split(" ").slice(-2).join(" "))}</span></a>` : `<a class="vien-tron dang-nhap" href="dang-nhap.html">${bieuTuong("sao")}<span>Đăng<br>nhập</span></a><a class="vien-tron dang-ky" href="dang-nhap.html#dang-ky">${bieuTuong("sao")}<span>Đăng<br>ký</span></a>`}<a class="gio-dau" href="gio-hang.html" aria-label="Giỏ hàng, ${so} sản phẩm">${bieuTuong("gio")}<span class="huy-hieu">${so}</span></a></nav></div>`;
+    `<div class="khung thanh-dau"><nav class="lien-ket-dau" aria-label="Điều hướng chính"><a href="san-pham.html" ${trang === "san-pham" ? 'aria-current="page"' : ""}>Sản phẩm</a><a href="khuyen-mai.html" ${trang === "khuyen-mai" ? 'aria-current="page"' : ""}>Khuyến mãi</a></nav><form class="tim-dau" action="san-pham.html" role="search"><a href="index.html" aria-label="Trang chủ Kiddobooks">${bieuTuong("menu")}</a><input type="search" name="q" placeholder="Tìm kiếm" aria-label="Tìm kiếm sách" value="${thoat(thamSo.get("q") || "")}"><button aria-label="Tìm kiếm">${bieuTuong("tim")}</button></form><nav class="tai-khoan-dau" aria-label="Tài khoản và giỏ hàng">${tk ? `<a class="vien-tron dang-nhap" href="tai-khoan.html">${bieuTuong("nguoi")}<span>${thoat(tk.ten.split(" ").slice(-2).join(" "))}</span></a>` : `<a class="vien-tron dang-nhap" href="dang-nhap.html">${iconTaiKhoan("dang-nhap")}<span>Đăng<br>nhập</span></a><a class="vien-tron dang-ky" href="dang-ky.html">${iconTaiKhoan("dang-ky")}<span>Đăng<br>ký</span></a>`}<a class="gio-dau" href="gio-hang.html" aria-label="Giỏ hàng, ${so} sản phẩm">${bieuTuong("gio")}<span class="huy-hieu">${so}</span></a></nav></div>`;
 }
 function thongTinLienHe() {
   return '<p>Hotline: <a href="tel:19002345">1900 2345</a></p><p>Thư điện tử: <a href="mailto:kiddobooks@gmail.com">kiddobooks@gmail.com</a></p>';
@@ -119,43 +126,22 @@ function theSach(sach) {
   return `<article class="the-san-pham">${sach.nhan ? `<span class="nhan-sach">${sach.nhan}</span>` : ""}<a href="chi-tiet-san-pham.html?id=${sach.id}" aria-label="Xem ${thoat(sach.ten)}">${bia(sach)}<h3>${sach.ten}</h3></a><div class="chan-the"><p class="gia">${tien(sach.gia)}</p><button class="them-nhanh" data-them="${sach.id}" aria-label="Thêm ${thoat(sach.ten)} vào giỏ">+</button></div></article>`;
 }
 function trangChu() {
-  noiDung.innerHTML = `<div class="khung noi-trang"><section class="gioi-thieu"><a href="index.html" aria-label="Kiddobooks, trang chủ"><img class="logo-lon" src="hinh-anh/bieu-trung/kiddobooks.png" alt="Kiddobooks & more"></a><div class="quang-cao"><h1>MÙA ĐỌC SÁCH - GIẢM 67%</h1><a class="nut" href="khuyen-mai.html">✓ &nbsp; Khám phá ngay</a></div></section><section class="muc-trang-chu"><h2>Danh mục sản phẩm</h2><div class="luoi-danh-muc">${DANH_MUC.slice(
-    0,
-    5,
-  )
-    .map(
-      (ten, i) =>
-        `<a class="o-danh-muc mau-${["xanh", "vang", "la", "xanh", "hong"][i]}" href="san-pham.html?danh-muc=${i}"><span class="tron-danh-muc"></span>${ten}</a>`,
-    )
-    .join(
-      "",
-    )}</div></section><section class="muc-trang-chu"><h2>Sản phẩm mới & bán chạy</h2><div class="luoi-noi-bat">${SAN_PHAM.slice(
-    0,
-    3,
-  )
-    .map(
-      (s) =>
-        `<article class="sach-noi-bat"><a href="chi-tiet-san-pham.html?id=${s.id}" aria-label="${s.ten}">${bia(s)}</a><div><a href="chi-tiet-san-pham.html?id=${s.id}"><h3>${s.ten}</h3></a><p>${tien(s.gia)}</p><div class="hang thao-tac-sach">${nutSach(s)}</div></div></article>`,
-    )
-    .join("")}</div></section></div>`;
-}
+  const anhDanhMuc = [
+    "hinh-anh/trang-chu/sach-to-mau.png",
+    "hinh-anh/trang-chu/thanh-giong.png",
+    "hinh-anh/trang-chu/the-flashcard.png",
+    "hinh-anh/trang-chu/co-be-quang-khan-do.png",
+    "hinh-anh/trang-chu/logo-k-bg.png",
+    "hinh-anh/trang-chu/logo.png",
+  ];
+  noiDung.innerHTML = `<div class="khung noi-trang"><section class="gioi-thieu"><a href="index.html" aria-label="Kiddobooks, trang chủ"><img class="logo-lon" src="hinh-anh/trang-chu/logo-k-bg.png" alt="Kiddobooks & more"></a><div class="quang-cao"><img class="anh-banner" src="hinh-anh/trang-chu/anh-banner.png" alt="Các bạn nhỏ đọc sách và học tập"><h1>MÙA ĐỌC SÁCH - GIẢM 67%</h1><a class="nut" href="khuyen-mai.html">✓ &nbsp; Khám phá ngay</a></div></section><section class="muc-trang-chu"><h2>Danh mục sản phẩm</h2><div class="luoi-danh-muc">${DANH_MUC.map((ten, i) => `<a class="o-danh-muc mau-${["xanh", "vang", "la", "xanh", "hong", "vang"][i]}" href="san-pham.html?danh-muc=${i}"><span class="tron-danh-muc"><img src="${anhDanhMuc[i]}" alt=""></span>${ten}</a>`).join("")}</div></section><section class="muc-trang-chu"><h2>Sản phẩm mới & bán chạy</h2><div class="luoi-noi-bat">${SAN_PHAM.filter((s) => s.nhan === "Mới" || s.nhan === "Bán chạy").slice(0, 3).map((s) => `<article class="sach-noi-bat"><a href="chi-tiet-san-pham.html?id=${s.id}" aria-label="${thoat(s.ten)}">${bia(s)}</a><div><a href="chi-tiet-san-pham.html?id=${s.id}"><h3>${thoat(s.ten)}</h3></a><p>${tien(s.gia)}</p><div class="hang thao-tac-sach">${nutSach(s)}</div></div></article>`).join("")}</div></section></div>`;
+} 
 function trangSanPham() {
-  noiDung.innerHTML = `<div class="khung noi-trang"><div class="duong-dan"><a href="index.html">Trang chủ</a> / Sản phẩm</div><div class="danh-muc-trang"><aside class="ben-loc" id="bo-loc"><form id="form-loc"><fieldset><legend>Danh mục</legend>${DANH_MUC.map((t, i) => `<label><input type="checkbox" name="danhMuc" value="${i}">${t}</label>`).join("")}</fieldset><fieldset><legend>Độ tuổi</legend>${[
-    [0, "0–3 tuổi"],
-    [4, "4–6 tuổi"],
-    [7, "7–12 tuổi"],
-  ]
-    .map(
-      ([v, t]) =>
-        `<label><input type="checkbox" name="tuoi" value="${v}">${t}</label>`,
-    )
-    .join(
-      "",
-    )}</fieldset><fieldset><legend>Khoảng giá</legend>${truong("Từ (đ)", "giaTu", "number", "", 'min="0" step="1000"')}${truong("Đến (đ)", "giaDen", "number", "", 'min="0" step="1000"')}</fieldset><button class="nut nut-chinh rong" type="submit">Áp dụng</button><button class="nut-chu rong" type="reset">Xóa / Đặt lại</button><p class="loi" role="alert"></p></form></aside><section><h1>Danh mục sản phẩm</h1><p>Khám phá sách và học cụ cho những ngày lớn khôn.</p><form class="tim-san-pham" id="tim-trong-trang"><input name="q" type="search" placeholder="Tìm sách & học cụ…" aria-label="Từ khóa sản phẩm" value="${thoat(thamSo.get("q") || "")}"><button class="nut nut-chinh">Tìm kiếm</button><button class="nut" type="button" id="mo-bo-loc" aria-controls="bo-loc" aria-expanded="false">Nâng cao</button></form><h2>Tất cả sản phẩm</h2><div class="dau-ket-qua"><span id="so-ket-qua"></span><label>Sắp xếp theo <select id="sap-xep" aria-label="Sắp xếp sản phẩm"><option value="lien-quan">Độ liên quan</option><option value="gia-tang">Giá thấp đến cao</option><option value="gia-giam">Giá cao đến thấp</option><option value="moi">Mới nhất</option></select></label></div><div class="luoi-san-pham" id="ket-qua"></div><nav class="phan-trang" id="phan-trang" aria-label="Phân trang sản phẩm"></nav><p class="ghi-chu-loc">Chọn tên sách để xem chi tiết, hoặc nhấn + để thêm nhanh vào giỏ.</p></section></div></div>`;
+  noiDung.innerHTML = `<div class="khung noi-trang"><div class="duong-dan"><a href="index.html">Trang chủ</a> / Sản phẩm</div><div class="danh-muc-trang"><aside class="ben-loc" id="bo-loc"><form id="form-loc"><fieldset><legend>Danh mục</legend>${DANH_MUC.map((t, i) => `<label><input type="checkbox" name="danhMuc" value="${i}">${t}</label>`).join("")}</fieldset><fieldset><legend>Khoảng giá</legend>${truong("Từ (đ)", "giaTu", "number", "", 'min="0" step="1000"')}${truong("Đến (đ)", "giaDen", "number", "", 'min="0" step="1000"')}</fieldset><button class="nut nut-chinh rong" type="submit">Áp dụng</button><button class="nut-chu rong" type="reset">Xóa / Đặt lại</button><p class="loi" role="alert"></p></form></aside><section><h1>Danh mục sản phẩm</h1><p>Khám phá sách và học cụ cho những ngày lớn khôn.</p><form class="tim-san-pham" id="tim-trong-trang"><input name="q" type="search" placeholder="Tìm sách & học cụ…" aria-label="Từ khóa sản phẩm" value="${thoat(thamSo.get("q") || "")}"><button class="nut nut-chinh">Tìm kiếm</button><button class="nut" type="button" id="mo-bo-loc" aria-controls="bo-loc" aria-expanded="false">Nâng cao</button></form><h2>Tất cả sản phẩm</h2><div class="dau-ket-qua"><span id="so-ket-qua"></span><label>Sắp xếp theo <select id="sap-xep" aria-label="Sắp xếp sản phẩm"><option value="lien-quan">Độ liên quan</option><option value="gia-tang">Giá thấp đến cao</option><option value="gia-giam">Giá cao đến thấp</option><option value="moi">Mới nhất</option></select></label></div><div class="luoi-san-pham" id="ket-qua"></div><nav class="phan-trang" id="phan-trang" aria-label="Phân trang sản phẩm"></nav><p class="ghi-chu-loc">Chọn tên sách để xem chi tiết, hoặc nhấn + để thêm nhanh vào giỏ.</p></section></div></div>`;
   const form = document.querySelector("#form-loc");
   let tuKhoa = thamSo.get("q") || "";
   let trangSo = 1;
-  let loc = { danhMuc: [], tuoi: [], giaTu: 0, giaDen: Infinity };
+  let loc = { danhMuc: [], giaTu: 0, giaDen: Infinity };
   if (thamSo.has("danh-muc")) {
     const i = Number(thamSo.get("danh-muc"));
     if (DANH_MUC[i]) {
@@ -168,7 +154,6 @@ function trangSanPham() {
       (s) =>
         (!tuKhoa || khongDau(s.ten).includes(khongDau(tuKhoa))) &&
         (!loc.danhMuc.length || loc.danhMuc.includes(s.danhMuc)) &&
-        (!loc.tuoi.length || loc.tuoi.includes(s.tuoi)) &&
         s.gia >= loc.giaTu &&
         s.gia <= loc.giaDen,
     );
@@ -200,7 +185,6 @@ function trangSanPham() {
     if (tu > den) throw Error("Giá từ phải nhỏ hơn hoặc bằng giá đến.");
     loc = {
       danhMuc: d.getAll("danhMuc").map(Number),
-      tuoi: d.getAll("tuoi").map(Number),
       giaTu: tu,
       giaDen: den,
     };
@@ -208,7 +192,7 @@ function trangSanPham() {
     ve();
   });
   form.addEventListener("reset", () => {
-    loc = { danhMuc: [], tuoi: [], giaTu: 0, giaDen: Infinity };
+    loc = { danhMuc: [], giaTu: 0, giaDen: Infinity };
     tuKhoa = "";
     document.querySelector("#tim-trong-trang input").value = "";
     trangSo = 1;
@@ -232,13 +216,13 @@ function trangSanPham() {
   ve();
 }
 function trangChiTiet() {
-  const s = timSach(thamSo.get("id") || "stem");
+  const s = timSach(thamSo.get("id") || SAN_PHAM[0].id);
   if (!s) {
     noiDung.innerHTML = `<div class="khung noi-trang">${trong("Không tìm thấy sản phẩm", "Cuốn sách này không có trong danh mục hiện tại.")}</div>`;
     return;
   }
   const daThich = (kho.yeuThich[chuGio()] || []).includes(s.id);
-  noiDung.innerHTML = `<div class="khung noi-trang"><nav class="duong-dan"><a href="san-pham.html">‹ Về danh mục</a> <span style="float:right"><a href="index.html">Trang chủ</a> &nbsp; / &nbsp; <a href="gio-hang.html">Giỏ hàng</a></span></nav><article class="chi-tiet"><div><div id="anh-chinh">${bia(s, "lon duong-cheo")}</div><div class="anh-nho" aria-label="Ảnh sản phẩm">${[s.mau, "hong", "vang"].map((m, i) => `<button aria-label="Xem ảnh ${i + 1}" aria-pressed="${i === 0}" data-mau-anh="${m}">${bia(s, "duong-cheo", m)}</button>`).join("")}</div></div><div><span class="do-tuoi">${bieuTuong("nguoi")} Độ tuổi: ${nhomTuoi(s)}</span><h1>${s.ten}</h1><div class="gia-chi-tiet"><span>${tien(s.gia)}</span>${s.cu ? `<del class="huy">${tien(s.cu)}</del>` : ""}<span class="ton-kho">● Còn hàng</span></div><section class="mo-ta"><h3>MÔ TẢ SẢN PHẨM</h3><p>${moTa(s)}</p><h3>THÔNG TIN CHI TIẾT</h3><ul><li>Hình thức: Bìa mềm, mực đậu nành không độc hại</li><li>Kích thước: 20 × 25 cm</li><li>Số trang: 120 trang</li><li>Kỹ năng: Tư duy logic, sáng tạo, kiên nhẫn và giải quyết vấn đề</li></ul></section><div class="hang khoang"><span>Số lượng:</span><div class="chon-so-luong"><button id="giam-chi-tiet" aria-label="Giảm số lượng">−</button><output id="so-chi-tiet">1</output><button id="tang-chi-tiet" aria-label="Tăng số lượng">+</button></div></div><div class="mua-chi-tiet">${nutSach(s)}</div><button class="yeu-thich" id="nut-yeu-thich" aria-pressed="${daThich}">${bieuTuong("timyeu")} ${daThich ? "Đã lưu yêu thích" : "Thêm vào yêu thích"}</button></div></article></div>`;
+  noiDung.innerHTML = `<div class="khung noi-trang"><nav class="duong-dan"><a href="san-pham.html">‹ Về danh mục</a> <span style="float:right"><a href="index.html">Trang chủ</a> &nbsp; / &nbsp; <a href="gio-hang.html">Giỏ hàng</a></span></nav><article class="chi-tiet"><div><div id="anh-chinh">${bia(s, "lon")}</div><div class="anh-nho" aria-label="Ảnh sản phẩm">${(s.anhChiTiet || [s.anh]).slice(0, 4).map((anh, i) => `<button aria-label="Xem ảnh ${i + 1}" aria-pressed="${i === 0}" data-anh="${thoat(anh)}">${bia(s, "", s.mau, anh)}</button>`).join("")}</div></div><div><h1>${s.ten}</h1><div class="gia-chi-tiet"><span>${tien(s.gia)}</span>${s.cu ? `<del class="huy">${tien(s.cu)}</del>` : ""}<span class="ton-kho">● Còn hàng</span></div><section class="mo-ta"><h3>MÔ TẢ SẢN PHẨM</h3><p>${moTa(s)}</p><h3>THÔNG TIN CHI TIẾT</h3><ul><li>Hình thức: Bìa mềm, mực đậu nành không độc hại</li><li>Kích thước: 20 × 25 cm</li><li>Số trang: 120 trang</li><li>Kỹ năng: Tư duy logic, sáng tạo, kiên nhẫn và giải quyết vấn đề</li></ul></section><div class="hang khoang"><span>Số lượng:</span><div class="chon-so-luong"><button id="giam-chi-tiet" aria-label="Giảm số lượng">−</button><output id="so-chi-tiet">1</output><button id="tang-chi-tiet" aria-label="Tăng số lượng">+</button></div></div><div class="mua-chi-tiet">${nutSach(s)}</div><button class="yeu-thich" id="nut-yeu-thich" aria-pressed="${daThich}">${bieuTuong("timyeu")} ${daThich ? "Đã lưu yêu thích" : "Thêm vào yêu thích"}</button></div></article></div>`;
   let so = 1;
   document.querySelector("#giam-chi-tiet").onclick = () => {
     so = Math.max(1, so - 1);
@@ -248,17 +232,11 @@ function trangChiTiet() {
     so = Math.min(99, so + 1);
     document.querySelector("#so-chi-tiet").value = so;
   };
-  document.querySelectorAll("[data-mau-anh]").forEach(
+  document.querySelectorAll("[data-anh]").forEach(
     (b) =>
       (b.onclick = () => {
-        document.querySelector("#anh-chinh").innerHTML = bia(
-          s,
-          "lon duong-cheo",
-          b.dataset.mauAnh,
-        );
-        document
-          .querySelectorAll("[data-mau-anh]")
-          .forEach((n) => n.setAttribute("aria-pressed", n === b));
+        document.querySelector("#anh-chinh").innerHTML = bia(s, "lon", s.mau, b.dataset.anh);
+        document.querySelectorAll("[data-anh]").forEach((n) => n.setAttribute("aria-pressed", n === b));
       }),
   );
   document.querySelector("#nut-yeu-thich").onclick = () => {
@@ -286,8 +264,8 @@ function trangChiTiet() {
   };
 }
 function trangKhuyenMai() {
-  noiDung.innerHTML = `<div class="khung noi-trang"><h1>Ưu đãi & khuyến mãi</h1><div class="khuyen-mai-bo-cuc khoang"><div><section class="uu-dai"><h2>Bộ sách tập viết & vẽ</h2><p>Giảm 20% so với mua lẻ sản phẩm</p><div class="hang"><span class="ma-uu-dai mau-hong">Mã: ABCXYZ</span><button class="nut nut-xanh" id="luu-ma">LƯU MÃ ƯU ĐÃI</button></div></section><section class="uu-dai"><h2>Bộ sách tư duy tiếng Anh & thẻ học</h2><p>Tặng kèm bộ màu acrylic trị giá 50.000 đ</p><div class="hang"><span class="ma-uu-dai mau-vang">Quà tặng khi mua bộ học tập</span><a class="nut nut-xanh" href="chi-tiet-san-pham.html?id=bang-viet">KHÁM PHÁ BỘ SÁCH</a></div><p class="nho khoang">Áp dụng cho Bộ bảng viết xóa học tập và Sách tô màu động vật.</p></section><section class="lien-he-nho"><h2>Thông tin liên hệ & cửa hàng</h2>${thongTinLienHe()}${thongTinDiaChi()}</section></div><form id="tu-van" class="form-tu-van"><h2>Gửi yêu cầu tư vấn nhanh</h2>${truong("Họ & tên", "ten", "text", "", 'required autocomplete="name" placeholder="Họ & tên"')}${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="tel" placeholder="Số điện thoại"')}${truong("Thư điện tử", "email", "email", "", 'required autocomplete="email" placeholder="Thư điện tử"')}<label>Nội dung cần tư vấn<textarea name="noiDung" required minlength="10" placeholder="Nội dung cần tư vấn"></textarea></label><p class="loi" role="alert"></p><button class="nut nut-xanh rong" type="submit">Gửi tin nhắn cho chúng tôi</button><p class="nho khoang">Yêu cầu được lưu trên trình duyệt để minh họa chức năng của bài tập.</p></form></div></div>`;
-  document.querySelector("#luu-ma").onclick = () => {
+  noiDung.innerHTML = `<div class="khung noi-trang"><h1>Ưu đãi & khuyến mãi</h1><div class="khuyen-mai-bo-cuc khoang"><div><section class="uu-dai"><h2>Bộ sách tập viết & vẽ</h2><p>Giảm 20% so với mua lẻ sản phẩm</p><div class="hang"><span class="ma-uu-dai mau-hong">Mã: ABCXYZ</span><button class="nut nut-xanh" id="luu-ma">LƯU MÃ ƯU ĐÃI</button></div></section><section class="uu-dai"><h2>Bộ sách tư duy tiếng Anh & thẻ học</h2><p>Tặng kèm bộ màu acrylic trị giá 50.000 đ</p><div class="hang"><span class="ma-uu-dai mau-vang">Mã: ABCXYZ</span><button class="nut nut-xanh" id="luu-ma-bo">LƯU MÃ ƯU ĐÃI</button></div></section><section class="lien-he-nho"><h2>Thông tin liên hệ & cửa hàng</h2>${thongTinLienHe()}${thongTinDiaChi()}</section></div><form id="tu-van" class="form-tu-van"><h2>Gửi yêu cầu tư vấn nhanh</h2>${truong("Họ & tên", "ten", "text", "", 'required autocomplete="name" placeholder="Họ & tên"')}${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="tel" placeholder="Số điện thoại"')}${truong("Thư điện tử", "email", "email", "", 'required autocomplete="email" placeholder="Thư điện tử"')}<label>Nội dung cần tư vấn<textarea name="noiDung" required minlength="10" placeholder="Nội dung cần tư vấn"></textarea></label><p class="loi" role="alert"></p><button class="nut nut-xanh rong" type="submit">Gửi tin nhắn cho chúng tôi</button></form></div></div>`;
+  document.querySelectorAll("#luu-ma, #luu-ma-bo").forEach((nutMa) => (nutMa.onclick = () => {
     try {
       kho.ma[chuGio()] = "ABCXYZ";
       luuDuLieu();
@@ -295,7 +273,7 @@ function trangKhuyenMai() {
     } catch (e) {
       thongBao(e.message);
     }
-  };
+  }));
   ganForm("tu-van", (d, f) => {
     if (!soDienThoaiHopLe(d.get("sdt")))
       throw Error("Số điện thoại gồm 10 chữ số và bắt đầu bằng 0.");
@@ -313,73 +291,20 @@ function trangKhuyenMai() {
     f.reset();
     const o = f.querySelector(".loi");
     o.classList.add("thanh-cong");
-    o.textContent = "Đã lưu yêu cầu tư vấn demo thành công.";
+    o.textContent = "Đã gửi yêu cầu tư vấn thành công.";
   });
 }
 function trangDangNhap() {
-  noiDung.innerHTML = `<div class="khung noi-trang"><h1>Đăng nhập / Đăng ký</h1><p class="dang-nhap-gioi-thieu">Một trang, hai thẻ: đăng nhập bên trái, đăng ký bên phải. Đăng nhập xong quay lại bước đặt hàng.</p><div class="hai-form"><section class="the-form" id="dang-nhap"><div class="thanh-the"><a href="#dang-nhap" class="dang-chon">Đăng nhập</a><a href="#dang-ky">Đăng ký</a></div><form class="noi-form" id="form-dang-nhap">${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="username" placeholder="Số điện thoại"')}${truong("Mật khẩu", "matKhau", "password", "", 'required autocomplete="current-password" placeholder="Mật khẩu"')}<p class="quen-mat-khau"><button class="nut-chu nho" id="quen-mat-khau" type="button">Quên mật khẩu?</button></p><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đăng nhập</button><p class="cuoi-form">Chưa có tài khoản? &nbsp; <a href="#dang-ky">Đăng ký ngay</a></p></form></section><section class="the-form" id="dang-ky"><div class="thanh-the"><a class="mau-la" href="#dang-nhap">Đăng nhập</a><a class="dang-chon" href="#dang-ky">Đăng ký</a></div><form class="noi-form" id="form-dang-ky">${truong("Họ và tên", "ten", "text", "", 'required minlength="2" autocomplete="name" placeholder="Họ và tên"')}${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="tel" placeholder="Số điện thoại"')}${truong("Mật khẩu", "matKhau", "password", "", 'required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"')}${truong("Xác nhận mật khẩu", "xacNhan", "password", "", 'required minlength="6" autocomplete="new-password" placeholder="Xác nhận mật khẩu"')}<label class="dong-y"><input type="checkbox" name="dongY" required>Đồng ý với <button class="nut-chu" type="button" id="chinh-sach">chính sách sử dụng</button></label><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đăng ký</button><p class="cuoi-form">Đã có tài khoản? &nbsp; <a href="#dang-nhap">Đăng nhập</a></p></form></section></div><p class="nhac-demo">Tài khoản dùng cho bài tập, được lưu trên trình duyệt này. Chỉ sử dụng thông tin và mật khẩu thử nghiệm.</p></div>`;
-  function quayLai() {
-    const q = thamSo.get("quay-lai");
-    const choPhep =
-      /^(dat-hang|tai-khoan|chi-tiet-san-pham)\.html(?:\?id=[a-z0-9-]+)?$/;
-    location.href = q && choPhep.test(q) ? q : "tai-khoan.html";
-  }
-  ganForm("form-dang-nhap", async (d) => {
-    const tk = kho.taiKhoan.find((t) => t.sdt === d.get("sdt"));
-    if (!tk || (await bamMatKhau(d.get("matKhau"), tk.muoi)) !== tk.bam)
-      throw Error("Số điện thoại hoặc mật khẩu chưa đúng.");
-    await dangNhapTaiKhoan(tk);
-    quayLai();
-  });
-  ganForm("form-dang-ky", async (d) => {
-    const ten = d.get("ten").trim(),
-      sdt = d.get("sdt"),
-      mk = d.get("matKhau");
-    if (ten.length < 2) throw Error("Họ tên cần ít nhất 2 ký tự.");
-    if (!soDienThoaiHopLe(sdt)) throw Error("Số điện thoại không hợp lệ.");
-    if (mk.length < 6) throw Error("Mật khẩu cần ít nhất 6 ký tự.");
-    if (mk !== d.get("xacNhan")) throw Error("Xác nhận mật khẩu chưa khớp.");
-    if (kho.taiKhoan.some((t) => t.sdt === sdt))
-      throw Error("Số điện thoại này đã được đăng ký.");
-    const muoi = maNgauNhien();
-    const bam = await bamMatKhau(mk, muoi);
-    if (kho.taiKhoan.some((t) => t.sdt === sdt))
-      throw Error("Số điện thoại này đã được đăng ký.");
-    const tk = { id: maNgauNhien(), ten, sdt, muoi, bam, diaChi: [] };
-    kho.taiKhoan.push(tk);
-    luuDuLieu();
-    await dangNhapTaiKhoan(tk);
-    quayLai();
-  });
-  document.querySelector("#chinh-sach").onclick = () =>
-    moHop(
-      "Chính sách sử dụng",
-      "<p>Website phục vụ học tập. Dữ liệu chỉ được lưu trên trình duyệt hiện tại. Các thao tác mua hàng và tư vấn là mô phỏng, không gửi đến cửa hàng. Không nhập thông tin nhạy cảm hay mật khẩu đang dùng ở nơi khác.</p>",
-    );
-  document.querySelector("#quen-mat-khau").onclick = () =>
-    moHop(
-      "Đặt lại mật khẩu demo",
-      `<p class="nho">Chức năng minh họa trên máy này, không gửi hoặc xác minh OTP.</p><form id="dat-lai-mat-khau">${truong("Số điện thoại đã đăng ký", "sdt", "tel", "", 'required pattern="0[0-9]{9}"')}${truong("Mật khẩu mới", "matKhau", "password", "", 'required minlength="6"')}${truong("Nhập lại mật khẩu mới", "xacNhan", "password", "", 'required minlength="6"')}<p class="loi" role="alert"></p><button class="nut nut-chinh rong">Đặt lại mật khẩu demo</button></form>`,
-      () =>
-        ganForm("dat-lai-mat-khau", async (d) => {
-          const tk = kho.taiKhoan.find((t) => t.sdt === d.get("sdt"));
-          if (!tk)
-            throw Error(
-              "Chưa có tài khoản với số điện thoại này trên trình duyệt.",
-            );
-          if (d.get("matKhau") !== d.get("xacNhan"))
-            throw Error("Xác nhận mật khẩu chưa khớp.");
-          const muoi = maNgauNhien();
-          const bam = await bamMatKhau(d.get("matKhau"), muoi);
-          tk.muoi = muoi;
-          tk.bam = bam;
-          luuDuLieu();
-          document.querySelector("#hop-thoai").close();
-          thongBao("Đã đặt lại mật khẩu demo. Anh/chị có thể đăng nhập.");
-        }),
-    );
-}
-function tongTienHTML(t) {
+  const dangKy = trang === "dang-ky";
+  const noiDangNhap = `<section class="the-form the-form-don mau-vang" id="dang-nhap"><div class="tieu-de-form"><h2>Đăng nhập</h2><p>Nhập số điện thoại và mật khẩu để tiếp tục vào trang đặt hàng.</p></div><form class="noi-form" id="form-dang-nhap">${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="username" placeholder="Số điện thoại"')}${truong("Mật khẩu", "matKhau", "password", "", 'required autocomplete="current-password" placeholder="Mật khẩu"')}<p class="quen-mat-khau"><button class="nut-chu nho" id="quen-mat-khau" type="button">Quên mật khẩu?</button></p><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đăng nhập</button><p class="cuoi-form">Chưa có tài khoản? <a href="dang-ky.html">Đăng ký ngay</a></p></form></section>`;
+  const noiDangKy = `<section class="the-form the-form-don mau-la" id="dang-ky"><div class="tieu-de-form"><h2>Đăng ký tài khoản</h2><p>Tạo tài khoản mới để đăng nhập nhanh, theo dõi đơn hàng và nhận ưu đãi từ Kiddo Books.</p></div><form class="noi-form" id="form-dang-ky">${truong("Họ và tên", "ten", "text", "", 'required minlength="2" autocomplete="name" placeholder="Họ và tên"')}${truong("Số điện thoại", "sdt", "tel", "", 'required pattern="0[0-9]{9}" autocomplete="tel" placeholder="Số điện thoại"')}${truong("Mật khẩu", "matKhau", "password", "", 'required minlength="6" autocomplete="new-password" placeholder="Mật khẩu"')}${truong("Xác nhận mật khẩu", "xacNhan", "password", "", 'required minlength="6" autocomplete="new-password" placeholder="Xác nhận mật khẩu"') }<label class="dong-y"><input type="checkbox" name="dongY" required>Đồng ý với <button class="nut-chu" type="button" id="chinh-sach">chính sách sử dụng</button></label><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đăng ký</button><p class="cuoi-form">Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập</a></p></form></section>`;
+  noiDung.innerHTML = `<div class="khung noi-trang noi-dang-nhap"><div class="tieu-de-trang"><h1>${dangKy ? "Đăng ký tài khoản" : "Đăng nhập"}</h1><p>${dangKy ? "Tạo tài khoản mới để đồng hành cùng Kiddo Books." : "Nhập số điện thoại và mật khẩu để tiếp tục vào trang đặt hàng."}</p></div><div class="mot-form">${dangKy ? noiDangKy : noiDangNhap}</div></div>`;
+  function quayLai() { const q = thamSo.get("quay-lai"); const choPhep = /^(dat-hang|tai-khoan|chi-tiet-san-pham)\.html(?:\?id=[a-z0-9-]+)?$/; location.href = q && choPhep.test(q) ? q : "tai-khoan.html"; }
+  ganForm("form-dang-nhap", (d) => { const tk = kho.taiKhoan.find((t) => t.sdt === d.get("sdt")); if (!tk || tk.matKhau !== d.get("matKhau")) throw Error("Số điện thoại hoặc mật khẩu chưa đúng."); dangNhapTaiKhoan(tk); quayLai(); });
+  ganForm("form-dang-ky", (d) => { const ten = d.get("ten").trim(), sdt = d.get("sdt"), mk = d.get("matKhau"); if (ten.length < 2) throw Error("Họ tên cần ít nhất 2 ký tự."); if (!soDienThoaiHopLe(sdt)) throw Error("Số điện thoại không hợp lệ."); if (mk.length < 6) throw Error("Mật khẩu cần ít nhất 6 ký tự."); if (mk !== d.get("xacNhan")) throw Error("Xác nhận mật khẩu chưa khớp."); if (kho.taiKhoan.some((t) => t.sdt === sdt)) throw Error("Số điện thoại này đã được đăng ký."); const tk = { id: maNgauNhien(), ten, sdt, matKhau: mk, diaChi: [] }; kho.taiKhoan.push(tk); luuDuLieu(); dangNhapTaiKhoan(tk); quayLai(); });
+  const cs = document.querySelector("#chinh-sach"); if (cs) cs.onclick = () => moHop("Chính sách sử dụng", "<p>Vui lòng cung cấp thông tin chính xác để chúng tôi hỗ trợ bạn tốt hơn.</p>");
+  const quen = document.querySelector("#quen-mat-khau"); if (quen) quen.onclick = () => moHop("Đặt lại mật khẩu", `<form id="dat-lai-mat-khau">${truong("Số điện thoại đã đăng ký", "sdt", "tel", "", 'required pattern="0[0-9]{9}"')}${truong("Mật khẩu mới", "matKhau", "password", "", 'required minlength="6"')}${truong("Nhập lại mật khẩu mới", "xacNhan", "password", "", 'required minlength="6"')}<p class="loi" role="alert"></p><button class="nut nut-chinh rong">Đặt lại mật khẩu</button></form>`, () => ganForm("dat-lai-mat-khau", (d) => { const tk = kho.taiKhoan.find((t) => t.sdt === d.get("sdt")); if (!tk) throw Error("Chưa tìm thấy tài khoản với số điện thoại này."); if (d.get("matKhau") !== d.get("xacNhan")) throw Error("Xác nhận mật khẩu chưa khớp."); tk.matKhau = d.get("matKhau"); luuDuLieu(); document.querySelector("#hop-thoai").close(); thongBao("Đã đặt lại mật khẩu. Anh/chị có thể đăng nhập."); }));
+}function tongTienHTML(t) {
   return `<div class="dong-tien"><span>Tạm tính</span><span>${tien(t.tam)}</span></div>${t.giam ? `<div class="dong-tien"><span>Giảm giá (20%)</span><span>−${tien(t.giam)}</span></div>` : ""}<div class="dong-tien"><span>Phí vận chuyển</span><span>${t.phi ? tien(t.phi) : "Miễn phí"}</span></div><div class="dong-tien tong-tien"><span>Tổng cộng</span><span>${tien(t.tong)}</span></div>`;
 }
 function trangGioHang() {
@@ -391,7 +316,7 @@ function trangGioHang() {
   noiDung.innerHTML = `<div class="khung noi-trang"><h1>Giỏ hàng của bạn</h1><div class="mua-hang-bo-cuc khoang"><section><div class="bang-gio-tieu-de"><span>Sản phẩm</span><span>Đơn giá</span><span>Số lượng</span><span>Thành tiền</span><span></span></div>${gio
     .map((d) => {
       const s = timSach(d.id);
-      return `<article class="dong-gio"><div class="sach-trong-gio"><a href="chi-tiet-san-pham.html?id=${s.id}" aria-label="${s.ten}">${bia(s)}</a><div><a href="chi-tiet-san-pham.html?id=${s.id}"><h3>${s.ten}</h3></a><p>Độ tuổi: ${nhomTuoi(s)}</p></div></div><div class="don-gia"><span class="nhan-mobile">Đơn giá</span>${tien(s.gia)}</div><div class="so-luong-gio"><span class="nhan-mobile">Số lượng</span><div class="chon-so-luong"><button data-doi-so="${s.id}" data-buoc="-1" aria-label="Giảm số lượng ${s.ten}" ${d.soLuong === 1 ? "disabled" : ""}>−</button><output>${d.soLuong}</output><button data-doi-so="${s.id}" data-buoc="1" aria-label="Tăng số lượng ${s.ten}" ${d.soLuong === 99 ? "disabled" : ""}>+</button></div></div><div class="thanh-tien-gio"><span class="nhan-mobile">Thành tiền</span>${tien(s.gia * d.soLuong)}</div><button class="xoa-gio" data-xoa-gio="${s.id}" aria-label="Xóa ${s.ten}">Xóa</button></article>`;
+      return `<article class="dong-gio"><div class="sach-trong-gio"><a href="chi-tiet-san-pham.html?id=${s.id}" aria-label="${s.ten}">${bia(s)}</a><div><a href="chi-tiet-san-pham.html?id=${s.id}"><h3>${s.ten}</h3></a></div></div><div class="don-gia"><span class="nhan-mobile">Đơn giá</span>${tien(s.gia)}</div><div class="so-luong-gio"><span class="nhan-mobile">Số lượng</span><div class="chon-so-luong"><button data-doi-so="${s.id}" data-buoc="-1" aria-label="Giảm số lượng ${s.ten}" ${d.soLuong === 1 ? "disabled" : ""}>−</button><output>${d.soLuong}</output><button data-doi-so="${s.id}" data-buoc="1" aria-label="Tăng số lượng ${s.ten}" ${d.soLuong === 99 ? "disabled" : ""}>+</button></div></div><div class="thanh-tien-gio"><span class="nhan-mobile">Thành tiền</span>${tien(s.gia * d.soLuong)}</div><button class="xoa-gio" data-xoa-gio="${s.id}" aria-label="Xóa ${s.ten}">Xóa</button></article>`;
     })
     .join(
       "",
@@ -470,7 +395,7 @@ function trangDatHang() {
     return;
   }
   const dc = tk.diaChi.find((d) => d.macDinh) || tk.diaChi[0];
-  noiDung.innerHTML = `<div class="khung noi-trang"><h1>Đặt hàng</h1><form id="form-dat-hang" class="mua-hang-bo-cuc khoang"><div class="form-dat-hang"><h2>1. Phương thức nhận hàng</h2><div class="chon-nhan"><label class="lua-chon"><input type="radio" name="nhan" value="cua-hang" checked>Đến lấy tại cửa hàng</label><label class="lua-chon"><input type="radio" name="nhan" value="giao-hang">Giao hàng tận nơi</label></div><p class="nho" id="noi-lay">Nhận tại 897 Giải Phóng - Hà Nội · 8h00–20h00.</p><h2>2. Thông tin người nhận</h2><div class="cot-doi">${truong("Họ và tên", "ten", "text", dc?.ten || tk.ten, 'required minlength="2" autocomplete="name"')}${truong("Số điện thoại", "sdt", "tel", dc?.sdt || tk.sdt, 'required pattern="0[0-9]{9}" autocomplete="tel"')}</div><div id="o-dia-chi" class="an">${truong("Địa chỉ chi tiết (số nhà, đường, quận/huyện, tỉnh/thành)", "diaChi", "text", dc?.noi || "", 'autocomplete="street-address"')}</div><h2>3. Thời gian nhận hàng</h2><div class="chon-nhan chon-gio"><label class="lua-chon"><input type="radio" name="thoiGian" value="ngay" checked>Giao ngay</label><label class="lua-chon"><input type="radio" name="thoiGian" value="hen">Hẹn giờ</label></div><div id="o-hen-gio" class="an">${truong("Chọn ngày & giờ", "henGio", "datetime-local")}</div><label>Ghi chú cho đơn hàng (không bắt buộc)<textarea name="ghiChu" placeholder="Ghi chú cho đơn hàng"></textarea></label><p class="nhac-demo">Đây là đơn hàng mô phỏng, không thu tiền và không gửi đến cửa hàng.</p></div><aside class="tom-tat"><h2>Đơn hàng của bạn</h2>${cacSachTrongDon(docGio())}<div id="tien-dat-hang">${tongTienHTML(tinhTien(0))}</div><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đặt hàng</button></aside></form></div>`;
+  noiDung.innerHTML = `<div class="khung noi-trang"><h1>Đặt hàng</h1><form id="form-dat-hang" class="mua-hang-bo-cuc khoang"><div class="form-dat-hang"><h2>1. Phương thức nhận hàng</h2><div class="chon-nhan"><label class="lua-chon"><input type="radio" name="nhan" value="cua-hang" checked>Đến lấy tại cửa hàng</label><label class="lua-chon"><input type="radio" name="nhan" value="giao-hang">Giao hàng tận nơi</label></div><p class="nho" id="noi-lay">Nhận tại 897 Giải Phóng - Hà Nội · 8h00–20h00.</p><h2>2. Thông tin người nhận</h2><div class="cot-doi">${truong("Họ và tên", "ten", "text", dc?.ten || tk.ten, 'required minlength="2" autocomplete="name"')}${truong("Số điện thoại", "sdt", "tel", dc?.sdt || tk.sdt, 'required pattern="0[0-9]{9}" autocomplete="tel"')}</div><div id="o-dia-chi" class="an">${truong("Địa chỉ chi tiết (số nhà, đường, quận/huyện, tỉnh/thành)", "diaChi", "text", dc?.noi || "", 'autocomplete="street-address"')}</div><h2>3. Thời gian nhận hàng</h2><div class="chon-nhan chon-gio"><label class="lua-chon"><input type="radio" name="thoiGian" value="ngay" checked>Giao ngay</label><label class="lua-chon"><input type="radio" name="thoiGian" value="hen">Hẹn giờ</label></div><div id="o-hen-gio" class="an">${truong("Chọn ngày & giờ", "henGio", "datetime-local")}</div><label>Ghi chú cho đơn hàng (không bắt buộc)<textarea name="ghiChu" placeholder="Ghi chú cho đơn hàng"></textarea></label></div><aside class="tom-tat"><h2>Đơn hàng của bạn</h2>${cacSachTrongDon(docGio())}<div id="tien-dat-hang">${tongTienHTML(tinhTien(0))}</div><p class="loi" role="alert"></p><button class="nut nut-chinh rong" type="submit">Đặt hàng</button></aside></form></div>`;
   const form = document.querySelector("#form-dat-hang");
   form.querySelectorAll("[name=nhan]").forEach(
     (r) =>
@@ -540,7 +465,7 @@ function trangDatHang() {
     delete kho.ma[tk.id];
     luuDuLieu();
     capNhatDau();
-    noiDung.innerHTML = `<div class="khung noi-trang"><section class="xac-nhan"><h1>Đặt hàng thành công!</h1><p>Mã đơn: <strong>${don.id}</strong></p><p>Đơn hàng demo đã được lưu. Cảm ơn bạn đã chọn sách cùng Kiddobooks.</p><p>Tổng cộng: <strong>${tien(don.tong)}</strong> · Trạng thái: Chờ xác nhận</p><div class="hang"><a href="tai-khoan.html#lich-su" class="nut nut-chinh">Xem đơn hàng</a><a href="san-pham.html" class="nut">Tiếp tục mua sắm</a></div></section></div>`;
+    noiDung.innerHTML = `<div class="khung noi-trang"><section class="xac-nhan"><h1>Đặt hàng thành công!</h1><p>Mã đơn: <strong>${don.id}</strong></p><p>Cảm ơn bạn đã chọn sách cùng Kiddobooks.</p><p>Tổng cộng: <strong>${tien(don.tong)}</strong> · Trạng thái: Chờ xác nhận</p><div class="hang"><a href="tai-khoan.html#lich-su" class="nut nut-chinh">Xem đơn hàng</a><a href="san-pham.html" class="nut">Tiếp tục mua sắm</a></div></section></div>`;
     window.scrollTo(0, 0);
   });
 }
@@ -578,15 +503,12 @@ function trangTaiKhoan() {
       "Đổi mật khẩu",
       `<form id="form-doi-mat-khau">${truong("Mật khẩu hiện tại", "cu", "password", "", 'required autocomplete="current-password"')}${truong("Mật khẩu mới", "moi", "password", "", 'required minlength="6" autocomplete="new-password"')}${truong("Xác nhận mật khẩu mới", "xacNhan", "password", "", 'required minlength="6"')}<p class="loi" role="alert"></p><button class="nut nut-chinh rong">Lưu mật khẩu mới</button></form>`,
       () =>
-        ganForm("form-doi-mat-khau", async (d) => {
-          if ((await bamMatKhau(d.get("cu"), tk.muoi)) !== tk.bam)
+        ganForm("form-doi-mat-khau", (d) => {
+          if (tk.matKhau !== d.get("cu"))
             throw Error("Mật khẩu hiện tại chưa đúng.");
           if (d.get("moi") !== d.get("xacNhan"))
             throw Error("Xác nhận mật khẩu chưa khớp.");
-          const muoi = maNgauNhien(),
-            bam = await bamMatKhau(d.get("moi"), muoi);
-          tk.muoi = muoi;
-          tk.bam = bam;
+          tk.matKhau = d.get("moi");
           luuDuLieu();
           document.querySelector("#hop-thoai").close();
           thongBao("Đã đổi mật khẩu.");
@@ -674,7 +596,7 @@ function trangTaiKhoan() {
         const d = don.find((d) => d.id === b.dataset.xemDon);
         moHop(
           "Đơn hàng " + d.id,
-          `<p>${thoat(d.trangThai)} · ${new Date(d.ngay).toLocaleString("vi-VN")}</p><p>${thoat(d.ten)} · ${thoat(d.sdt)}<br>${thoat(d.diaChi)}</p><p>Nhận hàng: ${d.thoiGian === "ngay" ? "Sớm nhất có thể" : new Date(d.thoiGian).toLocaleString("vi-VN")}</p>${d.sach.map((s) => `<p class="dong-tien"><span>${thoat(s.ten)} × ${s.soLuong}${s.qua ? "<br><small>+ Quà tặng bộ màu acrylic</small>" : ""}</span><span>${tien(s.gia * s.soLuong)}</span></p>`).join("")}${tongTienHTML(d)}${d.ghiChu ? `<p>Ghi chú: ${thoat(d.ghiChu)}</p>` : ""}<p class="nho">Đơn hàng mô phỏng được lưu trên trình duyệt.</p>`,
+          `<p>${thoat(d.trangThai)} · ${new Date(d.ngay).toLocaleString("vi-VN")}</p><p>${thoat(d.ten)} · ${thoat(d.sdt)}<br>${thoat(d.diaChi)}</p><p>Nhận hàng: ${d.thoiGian === "ngay" ? "Sớm nhất có thể" : new Date(d.thoiGian).toLocaleString("vi-VN")}</p>${d.sach.map((s) => `<p class="dong-tien"><span>${thoat(s.ten)} × ${s.soLuong}${s.qua ? "<br><small>+ Quà tặng bộ màu acrylic</small>" : ""}</span><span>${tien(s.gia * s.soLuong)}</span></p>`).join("")}${tongTienHTML(d)}${d.ghiChu ? `<p>Ghi chú: ${thoat(d.ghiChu)}</p>` : ""}`,
         );
       }),
   );
@@ -725,6 +647,7 @@ const veTrang = {
   "chi-tiet": trangChiTiet,
   "khuyen-mai": trangKhuyenMai,
   "dang-nhap": trangDangNhap,
+  "dang-ky": trangDangNhap,
   "gio-hang": trangGioHang,
   "dat-hang": trangDatHang,
   "tai-khoan": trangTaiKhoan,
@@ -754,3 +677,8 @@ window.addEventListener("storage", (e) => {
     noiDung.innerHTML = `<div class="khung noi-trang">${trong("Giỏ hàng vừa thay đổi ở tab khác", "Hãy mở lại bước đặt hàng để kiểm tra thông tin mới nhất.", "dat-hang.html", "Kiểm tra lại đơn hàng")}</div>`;
   }
 });
+
+
+
+
+
